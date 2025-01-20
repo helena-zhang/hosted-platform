@@ -1,7 +1,6 @@
 import React from 'react';
 import { 
-  Settings2, Globe, Key, Bell, Shield, Database, Workflow, Zap,
-  Cloud, GitBranch, Package, Terminal, Cpu, Keyboard
+  Settings2, Key, Terminal, Cloud
 } from 'lucide-react';
 
 interface SettingSection {
@@ -20,18 +19,6 @@ export function SettingsPage() {
       description: 'Manage your workspace preferences and account settings'
     },
     {
-      id: 'integrations',
-      title: 'Integrations',
-      icon: Zap,
-      description: 'Connect with external services and APIs'
-    },
-    {
-      id: 'security',
-      title: 'Security',
-      icon: Shield,
-      description: 'Configure security settings and access controls'
-    },
-    {
       id: 'environment',
       title: 'Environment',
       icon: Cloud,
@@ -41,7 +28,7 @@ export function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 py-6 sm:py-12">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -49,18 +36,18 @@ export function SettingsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Settings Panel */}
-          <div className="col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* General Settings */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <Settings2 className="w-5 h-5 text-gray-500" />
                   <h2 className="font-medium text-gray-900">General Settings</h2>
                 </div>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-6 space-y-6">
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Workspace Name</label>
@@ -84,13 +71,13 @@ export function SettingsPage() {
 
             {/* Environment Settings */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <Terminal className="w-5 h-5 text-gray-500" />
                   <h2 className="font-medium text-gray-900">Runtime Environment</h2>
                 </div>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-6 space-y-6">
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Node.js Version</label>
@@ -114,13 +101,13 @@ export function SettingsPage() {
 
             {/* API Keys */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <Key className="w-5 h-5 text-gray-500" />
                   <h2 className="font-medium text-gray-900">API Keys</h2>
                 </div>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="p-4 sm:p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">OpenAI API Key</label>
                   <div className="mt-1 flex rounded-md shadow-sm">

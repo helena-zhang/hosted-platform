@@ -10,17 +10,46 @@
   }
 }
 
-.class-card {
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04),
-              0 1px 2px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 16px;
-  transition: all 0.2s ease-in-out;
+/* Optional background gradients if you're using them */
+.main-gradient {
+  background: linear-gradient(135deg, rgba(192, 255, 193, 0.2) 0%, rgba(255, 255, 255, 0) 50%);
+}
+.sidebar-gradient {
+  background: linear-gradient(180deg, #1a4645 0%, #0f2b3c 100%);
 }
 
+/* Basic card styling */
+.class-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04),
+              0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease-in-out;
+}
 .class-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05),
               0 2px 4px rgba(0, 0, 0, 0.03);
   transform: translateY(-1px);
+}
+
+/* ROUNDED GRADIENT BORDER for the question card */
+.question-border {
+  position: relative;
+  z-index: 0;
+}
+.question-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #42d392, #647eff);
+  z-index: -2;
+}
+.question-border::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: calc(16px - 2px);
+  background: #fff;
+  z-index: -1;
 }

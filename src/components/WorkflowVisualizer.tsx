@@ -83,20 +83,10 @@ export function WorkflowVisualizer({ nodes: initialNodes, actions, description }
     async: 'bg-green-50 text-green-900 border-green-200',
   };
 
-  return (
+  return 
+  (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-medium text-gray-900">Workflow Visualization</h2>
-        <div className="flex gap-6">
-          {Object.entries(icons).map(([type, Icon]) => (
-            <div key={type} className="flex items-center gap-2">
-              <Icon className={`w-4 h-4 ${type === 'llm' ? 'text-blue-600' : type === 'flow' ? 'text-purple-600' : type === 'batch' ? 'text-orange-600' : 'text-green-600'}`} />
-              <span className="text-sm text-gray-500 capitalize">{type}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      
+      {/* Main Container */}
       <div 
         ref={containerRef}
         className="relative h-[300px] rounded-2xl bg-white border border-gray-100 overflow-hidden"

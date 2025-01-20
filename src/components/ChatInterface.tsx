@@ -8,9 +8,10 @@ interface ChatMessage {
 
 interface ChatInterfaceProps {
   onUpdateCode: (newCode: string) => void;
+  workflowVisualization?: React.ReactNode;
 }
 
-export function ChatInterface({ onUpdateCode }: ChatInterfaceProps) {
+export function ChatInterface({ onUpdateCode, workflowVisualization }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
 
@@ -20,21 +21,29 @@ export function ChatInterface({ onUpdateCode }: ChatInterfaceProps) {
     const newMessages = [
       ...messages,
       { role: 'user', content: input },
-      // In a real app, this would be an API call to get the assistant's response
-      { role: 'assistant', content: 'I\'ve updated the code based on your request.' }
+      { role: 'assistant', content: "I've updated the code based on your request." }
     ];
+
     setMessages(newMessages);
     setInput('');
-    
-    // Simulate code update - in a real app, this would come from the API
+
     onUpdateCode('// Updated code based on chat\n' + input);
   };
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] h-full flex flex-col">
+      {/* Header */}
       <div className="px-6 py-4 border-b border-gray-100">
         <h2 className="text-sm font-medium text-gray-900">Chat</h2>
       </div>
+
+      {workflowVisualization && (
+        <div className="p-4 border-b border-gray-100">
+          {workflowVisualization}
+        </div>
+      )}
+
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((message, index) => (
           <div
@@ -53,6 +62,8 @@ export function ChatInterface({ onUpdateCode }: ChatInterfaceProps) {
           </div>
         ))}
       </div>
+
+      {/* Input box */}
       <div className="p-4 bg-white border-t border-gray-100">
         <div className="flex gap-2">
           <input

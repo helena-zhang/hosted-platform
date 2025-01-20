@@ -1,51 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomOneLight } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import {
+  ArrowLeft,
+  Files,
+  FolderTree,
+  ChevronRight,
+  FileCode2,
+  FileJson,
+  Terminal,
+} from 'lucide-react';
 import { WorkflowVisualizer } from '../components/WorkflowVisualizer';
 import { ChatInterface } from '../components/ChatInterface';
-import { Code2, ArrowLeft, FolderTree, Terminal, Play, Settings2, Files, ChevronRight, FileCode2, FileJson } from 'lucide-react';
 
 export function WorkflowPage() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Keep track of which tab is selected
   const [selectedTab, setSelectedTab] = useState<'python' | 'typescript'>('python');
-  const [activePanel, setActivePanel] = useState<'files' | 'workflow'>('files');
-  const description = location.state?.description || 'No description provided';
+  
+  // This will store the code after we "type" it out character by character
+  const [displayedCode, setDisplayedCode] = useState<string>('');
+  // We'll also track our current index in the string we are typing
+  const [charIndex, setCharIndex] = useState<number>(0);
 
-  // Example workflow data - in a real app, this would be fetched based on the ID
-  const exampleWorkflow = {
-    nodes: [
-      { id: '1', type: 'llm' as const, label: 'Parse Input', position: { x: 150, y: 150 } },
-      { id: '2', type: 'flow' as const, label: 'Process Data', position: { x: 350, y: 150 } },
-      { id: '3', type: 'batch' as const, label: 'Batch Analysis', position: { x: 550, y: 150 } },
-      { id: '4', type: 'async' as const, label: 'Async Tasks', position: { x: 350, y: 300 } },
-    ],
-    actions: [
-      { from: '1', to: '2', label: 'Send parsed data' },
-      { from: '2', to: '3', label: 'Process batch' },
-      { from: '2', to: '4', label: 'Trigger async' },
-    ],
-  };
-
-  const fileStructure = [
-    {
-      name: 'src',
-      type: 'folder',
-      items: [
-        { name: 'main.py', type: 'file', icon: FileCode2 },
-        { name: 'config.json', type: 'file', icon: FileJson },
-        { name: 'utils.py', type: 'file', icon: FileCode2 }
-      ]
-    },
-    {
-      name: 'tests',
-      type: 'folder',
-      items: [
-        { name: 'test_main.py', type: 'file', icon: FileCode2 }
-      ]
-    }
-  ];
-
+  // Full code for each tab
   const generatedCode = {
     python: `from typing import Dict, Any
 import asyncio
@@ -87,7 +69,8 @@ async def main():
     # Schedule async tasks
     await async_tasks(async_data)
     
-    return analysis_results`,
+    return analysis_results
+`,
     typescript: `import { OpenAI } from 'langchain/llms/openai';
 import { LLMChain } from 'langchain/chains';
 import { PromptTemplate } from 'langchain/prompts';
@@ -116,7 +99,7 @@ async function batchAnalysis(data: { items: Array<any> }) {
   const results = await Promise.all(
     data.items.map(async (item) => ({
       id: item.id,
-      result: 'processed'
+      result: 'processed',
     }))
   );
   return { results };
@@ -141,11 +124,62 @@ async function main() {
   await asyncTasks(asyncData);
   
   return analysisResults;
-}`
+}
+`,
   };
 
+  // Whenever the tab changes, reset the typed code and index
+  useEffect(() => {
+    setDisplayedCode('');
+    setCharIndex(0);
+  }, [selectedTab]);
+
+  // Typewriter effect: each time `charIndex` changes, add one character
+  useEffect(() => {
+    const activeCode = generatedCode[selectedTab];
+    if (charIndex < activeCode.length) {
+      const timeoutId = setTimeout(() => {
+        // Add next character
+        setDisplayedCode((prev) => prev + activeCode[charIndex]);
+        setCharIndex((prev) => prev + 1);
+      }, 1); // Adjust typing speed as desired
+      return () => clearTimeout(timeoutId);
+    }
+  }, [charIndex, selectedTab, generatedCode]);
+
+  // Example data for workflow visualization and file explorer
+  const exampleWorkflow = {
+    nodes: [
+      { id: '1', type: 'llm' as const, label: 'Parse Input', position: { x: 150, y: 150 } },
+      { id: '2', type: 'flow' as const, label: 'Process Data', position: { x: 350, y: 150 } },
+      { id: '3', type: 'batch' as const, label: 'Batch Analysis', position: { x: 550, y: 150 } },
+      { id: '4', type: 'async' as const, label: 'Async Tasks', position: { x: 350, y: 300 } },
+    ],
+    actions: [
+      { from: '1', to: '2', label: 'Send parsed data' },
+      { from: '2', to: '3', label: 'Process batch' },
+      { from: '2', to: '4', label: 'Trigger async' },
+    ],
+  };
+
+  const fileStructure = [
+    {
+      name: 'src',
+      type: 'folder',
+      items: [
+        { name: 'main.py', type: 'file', icon: FileCode2 },
+        { name: 'config.json', type: 'file', icon: FileJson },
+        { name: 'utils.py', type: 'file', icon: FileCode2 },
+      ],
+    },
+    {
+      name: 'tests',
+      type: 'folder',
+      items: [{ name: 'test_main.py', type: 'file', icon: FileCode2 }],
+    },
+  ];
+
   const handleCodeUpdate = (newCode: string) => {
-    // In a real app, this would update the code in state or backend
     console.log('Code updated:', newCode);
   };
 
@@ -199,94 +233,78 @@ async function main() {
       <div className="flex-1 flex min-h-0">
         {/* Left Sidebar */}
         <div className="w-12 bg-gray-100 border-r border-gray-200 flex flex-col items-center py-4 gap-4 flex-shrink-0">
-          <button
-            onClick={() => setActivePanel('files')}
-            className={`p-2 rounded-lg ${
-              activePanel === 'files' ? 'bg-white shadow-sm' : 'text-gray-700 hover:bg-gray-200'
-            }`}
-          >
+          <button className="p-2 rounded-lg bg-white shadow-sm">
             <Files className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setActivePanel('workflow')}
-            className={`p-2 rounded-lg ${
-              activePanel === 'workflow' ? 'bg-white shadow-sm' : 'text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            <Play className="w-5 h-5" />
           </button>
         </div>
 
-        {/* File Explorer */}
-        <div className="w-64 border-r border-gray-200 bg-white flex-shrink-0 flex flex-col min-h-0">
+        {/* File Explorer (thinner now) */}
+        <div className="w-48 border-r border-gray-200 bg-white flex-shrink-0 flex flex-col min-h-0">
           <div className="p-4 flex-shrink-0">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              {activePanel === 'files' ? 'Explorer' : 'Workflow'}
-            </h2>
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Explorer</h2>
           </div>
           <div className="flex-1 overflow-auto px-4">
             <FileExplorer />
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex min-w-0">
-          {activePanel === 'files' ? (
-            <>
-              {/* Code Editor */}
-              <div className="flex-1 flex flex-col min-w-0">
-                <div className="border-b border-gray-200 bg-white flex-shrink-0">
-                  <div className="flex items-center px-4">
-                    <div className="flex">
-                      <button
-                        onClick={() => setSelectedTab('python')}
-                        className={`px-4 py-3 text-sm font-medium transition-colors duration-300 ${
-                          selectedTab === 'python'
-                            ? 'text-gray-900 border-b-2 border-gray-900'
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                      >
-                        main.py
-                      </button>
-                      <button
-                        onClick={() => setSelectedTab('typescript')}
-                        className={`px-4 py-3 text-sm font-medium transition-colors duration-300 ${
-                          selectedTab === 'typescript'
-                            ? 'text-gray-900 border-b-2 border-gray-900'
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                      >
-                        index.ts
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-1 overflow-auto bg-white">
-                  <pre className="p-4 text-sm font-mono text-gray-800">
-                    <code>{generatedCode[selectedTab]}</code>
-                  </pre>
-                </div>
+        {/* Main Content (Code Editor) - slightly wider because Explorer is narrower */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="border-b border-gray-200 bg-white flex-shrink-0">
+            <div className="flex items-center px-4">
+              <div className="flex">
+                <button
+                  onClick={() => setSelectedTab('python')}
+                  className={`px-4 py-3 text-sm font-medium transition-colors duration-300 ${
+                    selectedTab === 'python'
+                      ? 'text-gray-900 border-b-2 border-gray-900'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  main.py
+                </button>
+                <button
+                  onClick={() => setSelectedTab('typescript')}
+                  className={`px-4 py-3 text-sm font-medium transition-colors duration-300 ${
+                    selectedTab === 'typescript'
+                      ? 'text-gray-900 border-b-2 border-gray-900'
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  test_main.py
+                </button>
               </div>
+            </div>
+          </div>
 
-              {/* Right Panel - Chat Interface */}
-              <div className="w-96 border-l border-gray-200 bg-white flex-shrink-0">
-                <ChatInterface onUpdateCode={handleCodeUpdate} />
-              </div>
-            </>
-          ) : (
-            // Workflow Visualization (full width when active)
-            <div className="flex-1 bg-white p-8">
+          <div className="flex-1 overflow-auto bg-white">
+            <SyntaxHighlighter
+              language={selectedTab === 'python' ? 'python' : 'typescript'}
+              style={atomOneLight}
+              showLineNumbers
+              customStyle={{ margin: 0, padding: '1rem', minHeight: '100%' }}
+            >
+              {displayedCode}
+            </SyntaxHighlighter>
+          </div>
+        </div>
+
+        {/* Right Panel - Chat Interface + Workflow Visualization (wider now) */}
+        <div className="w-[30rem] border-l border-gray-200">
+          <ChatInterface
+            onUpdateCode={handleCodeUpdate}
+            workflowVisualization={
               <WorkflowVisualizer
                 nodes={exampleWorkflow.nodes}
                 actions={exampleWorkflow.actions}
-                description={description}
+                description="A sample workflow"
               />
-            </div>
-          )}
+            }
+          />
         </div>
       </div>
 
-      {/* Bottom Panel */}
+      {/* Bottom Panel (Terminal) */}
       <div className="h-32 border-t border-gray-200 bg-white flex-shrink-0">
         <div className="flex items-center px-4 py-2 border-b border-gray-200">
           <Terminal className="w-4 h-4 text-gray-500 mr-2" />
