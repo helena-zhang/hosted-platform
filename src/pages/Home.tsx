@@ -70,10 +70,18 @@ export function Home() {
         {/* Workflow Description Card */}
         <div className="class-card question-border p-3 rounded-2xl mb-6 sm:mb-12 mx-auto max-w-2xl">
           <div className="relative">
-            <textarea
-              className="w-full bg-transparent text-base sm:text-lg placeholder-gray-400 outline-none resize-none py-3 px-4"
+          <textarea
+              className="
+                w-full 
+                bg-transparent 
+                text-sm sm:text-base 
+                placeholder-gray-400 
+                outline-none 
+                resize-none 
+                py-4 px-5
+              "
               placeholder="Tell me about the AI workflow you want to create"
-              rows={3}
+              rows={5}
               value={workflowDescription}
               onChange={(e) => setWorkflowDescription(e.target.value)}
             />
