@@ -8,25 +8,26 @@ import {
   FaCalendarAlt,
   FaHeadset,
   FaFileAlt,
-  FaChartLine,
   FaFunnelDollar,
-  FaRegChartBar,
-  FaUserPlus,
-  FaTasks,
-  FaComments,
-  FaPaste,
 } from 'react-icons/fa';
 
 export function Home() {
   const [workflowDescription, setWorkflowDescription] = useState('');
+  const [isDesigning, setIsDesigning] = useState(false);
   const navigate = useNavigate();
 
   const handleCreateWorkflow = () => {
     if (workflowDescription.trim()) {
-      const workflowId = Math.random().toString(36).substr(2, 9);
-      navigate(`/workflow/${workflowId}`, { 
-        state: { description: workflowDescription } 
-      });
+      // Show the "Designing your workflow..." overlay
+      setIsDesigning(true);
+
+      // Simulate a delay of 3 seconds before navigating
+      setTimeout(() => {
+        const workflowId = Math.random().toString(36).substr(2, 9);
+        navigate(`/workflow/${workflowId}`, { 
+          state: { description: workflowDescription } 
+        });
+      }, 3000);
     }
   };
 
@@ -42,8 +43,18 @@ export function Home() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:p-8">
-      {/* Reduced max width to 3xl so 3 columns won't stretch too wide */}
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-8 relative">
+      {/* Full-screen overlay if isDesigning is true */}
+      {isDesigning && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center z-50">
+          {/* Spinner (You can make your own or use any library spinner) */}
+          <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4 animate-spin"></div>
+          <p className="text-white text-xl sm:text-2xl font-semibold">
+            Designing your workflow...
+          </p>
+        </div>
+      )}
+
       <div className="max-w-3xl w-full mx-auto">
         
         {/* Header Section */}
